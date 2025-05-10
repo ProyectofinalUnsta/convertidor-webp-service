@@ -20,7 +20,8 @@ app.use(cors({
 app.use(cors({
   origin:'*',
   methods:['POST','GET'],
-  allowedHeaders:['Content-Type', 'multipart/form-data'],
+  allowedHeaders:['Content-Type', 'Authorization'],
+  credentials:false
 }))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
