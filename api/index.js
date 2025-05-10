@@ -17,6 +17,11 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 }))
+app.use(cors({
+  origin:'*',
+  methods:['POST','GET'],
+  allowedHeaders:['Content-Type', 'multipart/form-data'],
+}))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
