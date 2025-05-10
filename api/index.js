@@ -29,6 +29,8 @@ app.use(express.urlencoded({ extended: true }))
 const url = process.env.IMG_API_URL
 const key = process.env.IMGBB_API_KEY
 const port = process.env.PORT
+
+
 app.get('/',(req,res)=> {
     res.send('server is working!')
 })
@@ -38,7 +40,7 @@ app.post('/upload', upload.single('image'), async (req, res) => {
     const webpbuffer = await sharp(req.file.buffer).webp().toBuffer()
     const base64Image = webpbuffer.toString('base64')
 
-    const response = await axios.post(`${url}?${key}`, null, {
+    const response = await axios.post(`${url}?key=${key}`, null, {
       params: {
         image: base64Image,
         name: Date.now().toString() + '.webp'
