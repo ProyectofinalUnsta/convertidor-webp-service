@@ -1,0 +1,10 @@
+## Convertidor de imagenes ##
+
+# Metodos 
+ - post
+
+# Uso 
+
+- convierte las imagenes de /format a /webp las hostea y retorna una url
+
+
