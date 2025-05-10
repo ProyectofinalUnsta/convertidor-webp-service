@@ -4,7 +4,7 @@ import cors from 'cors'
 import multer from 'multer'
 import sharp from 'sharp'
 import axios from 'axios'
-import serverless from 'serverless-http'
+
 
 dotenv.config()
 
@@ -22,7 +22,7 @@ app.use(express.urlencoded({ extended: true }))
 
 const url = process.env.IMG_API_URL
 const key = process.env.IMGBB_API_KEY
-
+const port = process.env.PORT
 app.get('/',(req,res)=> {
     res.send('server is working!')
 })
@@ -46,5 +46,4 @@ app.post('/upload', upload.single('image'), async (req, res) => {
   }
 })
 
-
-export default serverless(app)
+app.listen(port,()=> console.log('server is running'))
