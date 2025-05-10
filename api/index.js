@@ -19,7 +19,7 @@ app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 const url = process.env.IMG_API_URL
 const key = process.env.IMGBB_API_KEY
-
+const port = process.env.PORT
 
 
 app.post('/upload', upload.single('image'), async (req,res)=> {
