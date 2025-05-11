@@ -1,57 +1,64 @@
 import express from 'express'
-import dotenv from 'dotenv'
-import cors from 'cors'
 import multer from 'multer'
 import sharp from 'sharp'
+import cors from 'cors'
 import axios from 'axios'
+import { fileTypeFromBuffer } from 'file-type'
+import FormData from 'form-data'
 
-
-dotenv.config()
 
 const app = express()
-const upload = multer()
-
-app.use(cors({
-  origin: '*',
-  methods: ['POST'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-}))
+app.use(express.json())
+app.use(express.urlencoded({extended:true}))
 app.use(cors({
   origin:'*',
   methods:['POST','GET'],
   allowedHeaders:['Content-Type', 'Authorization'],
   credentials:false
 }))
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
+const upload = multer()
 
-const url = process.env.IMG_API_URL
 const key = process.env.IMGBB_API_KEY
+const url = process.env.IMGBB_API_KEY
 const port = process.env.PORT
 
-
-app.get('/',(req,res)=> {
-    res.send('server is working!')
-})
-
 app.post('/upload', upload.single('image'), async (req, res) => {
-
   try {
-    const webpbuffer = await sharp(req.body.buffer).webp().toBuffer()
-    const base64Image = webpbuffer.toString('base64')
+    
+    if (!req.file) {
+      return res.status(400).json({ error: 'No se recibió ningún archivo' })
+    }
 
-    const response = await axios.post(`${url}?key=${key}`, null, {
-      params: {
-        image: base64Image,
-        name: Date.now().toString() + '.webp'
-      }
+    const buffer = req.file.buffer
+   
+    // Detectamos tipo de archivo
+    const fileType = await fileTypeFromBuffer(buffer)
+
+    let finalBuffer = buffer
+
+    // Si NO es webp, convertimos a webp
+    if (fileType?.mime !== 'image/webp') {
+      finalBuffer = await sharp(buffer).webp().toBuffer()
+    }
+
+    // Convertimos a base64
+    const base64Image = finalBuffer.toString('base64')
+
+  const form = new FormData()
+ 
+   form.append('image', base64Image)
+   form.append('name', `${Date.now()}.webp`)
+
+    // Subimos a ImgBB
+    const response = await axios.post( `${url}?key=${key}`, form, {
+    headers: form.getHeaders()
     })
 
+ console.log(response.data.data.url)
     res.json({ url: response.data.data.url })
   } catch (err) {
-    console.log(err.message)
-    res.status(500).json({ error: 'error al procesar la imagen' })
+    console.error(err.response?.data || err.message)
+    res.status(500).json({ error: 'Error al subir la imagen' })
   }
 })
 
