@@ -36,8 +36,9 @@ app.get('/',(req,res)=> {
 })
 
 app.post('/upload', upload.single('image'), async (req, res) => {
+
   try {
-    const webpbuffer = await sharp(req.file.buffer).webp().toBuffer()
+    const webpbuffer = await sharp(req.body.buffer).webp().toBuffer()
     const base64Image = webpbuffer.toString('base64')
 
     const response = await axios.post(`${url}?key=${key}`, null, {
