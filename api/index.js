@@ -19,8 +19,12 @@ app.use(cors({
 const upload = multer()
 
 const key = process.env.IMGBB_API_KEY
-const url = process.env.IMGBB_API_KEY
+const url = process.env.IMG_API_URL
 const port = process.env.PORT
+
+app.get('/',(req,res)=> {
+  res.send('funcionando!')
+})
 
 app.post('/upload', upload.single('image'), async (req, res) => {
   try {
@@ -50,7 +54,7 @@ app.post('/upload', upload.single('image'), async (req, res) => {
    form.append('name', `${Date.now()}.webp`)
 
     // Subimos a ImgBB
-    const response = await axios.post( `${url}?key=${key}`, form, {
+    const response = await axios.post(`${url}?key=${key}`, form, {
     headers: form.getHeaders()
     })
 
